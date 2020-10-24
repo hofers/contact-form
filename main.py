@@ -54,6 +54,7 @@ def contact(request):
         msg.add_header('reply-to', fields["email"])
         msg.attach(MIMEText(fields["message"], 'plain'))
     except Exception as e:
+        print("Error constructing message fields: {0}".format(str(e)))
         return ("Error constructing message fields: {0}".format(str(e)), 500, headers)
 
     if "attachments" in fields:
@@ -66,6 +67,7 @@ def contact(request):
                 part['Content-Disposition'] = f'attachment; filename="{file_names[index]}"'
                 msg.attach(part)
         except:
+            print("Error attaching attachments. names: {0} attachments: {1}".format(file_names, b64_files))
             return ("Error attaching attachments. names: {0} attachments: {1}".format(file_names, b64_files), 500, headers)
 
     try:
@@ -75,6 +77,7 @@ def contact(request):
             server.login(USER, PASS)
             server.sendmail(fields["email"], RECIPIENT, msg.as_string())
     except Exception as e:
+        print("Error sending email: {0}".format(str(e)))
         return ("Error sending email: {0}".format(str(e)), 500, headers)
 
     return (f'success: "{msg.as_string()}"', 200, headers)
