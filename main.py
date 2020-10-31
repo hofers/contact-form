@@ -9,6 +9,8 @@ from google.cloud import secretmanager
 RECIPIENT = "me@seanhofer.com"
 PROJECT_ID = "coherent-coder-193013"
 
+CLIENT = secretmanager.SecretManagerServiceClient()
+
 def contact(request):
   """Handles Contact Form requests.
 
@@ -17,19 +19,11 @@ def contact(request):
   Returns:
     The response text.
   """
-  client = secretmanager.SecretManagerServiceClient()
-
-  u_encoded = client.access_secret_version(request={"name": get_secret_path("seanbot-user")})
-  p_encoded = client.access_secret_version(request={"name": get_secret_path("seanbot-pass")})
-  d_encoded = client.access_secret_version(request={"name": get_secret_path("contact-form-allowed-domains")})
-  s_encoded = client.access_secret_version(request={"name": get_secret_path("smtp-domain")})
-  sp_encoded = client.access_secret_version(request={"name": get_secret_path("smtp-port")})
-
-  USER = u_encoded.payload.data.decode("UTF-8")
-  PASS = p_encoded.payload.data.decode("UTF-8")
-  ALLOWED_DOMAINS = d_encoded.payload.data.decode("UTF-8")
-  SMTP_DOMAIN = s_encoded.payload.data.decode("UTF-8")
-  SMTP_PORT = sp_encoded.payload.data.decode("UTF-8")
+  USER = get_secret("seanbot-user")
+  PASS = get_secret("seanbot-pass")
+  ALLOWED_DOMAINS = get_secret("contact-form-allowed-domains")
+  SMTP_DOMAIN = get_secret("smtp-domain")
+  SMTP_PORT = get_secret("smtp-port")
 
   headers = {}
   if request.headers['origin'] in ALLOWED_DOMAINS:
@@ -87,3 +81,7 @@ def has_required_fields(fields):
 
 def get_secret_path(secret_id):
   return f"projects/{PROJECT_ID}/secrets/{secret_id}/versions/latest"
+
+def get_secret(secret_id):
+  encoded = CLIENT.access_secret_version(request={"name": get_secret_path(secret_id)})
+  return encoded.payload.data.decode("UTF-8")
