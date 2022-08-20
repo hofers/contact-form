@@ -1,4 +1,5 @@
 import base64
+import logging
 import smtplib
 import ssl
 from email.mime.multipart import MIMEMultipart
@@ -10,6 +11,8 @@ RECIPIENT = "me@seanhofer.com"
 PROJECT_ID = "coherent-coder-193013"
 
 CLIENT = secretmanager.SecretManagerServiceClient()
+
+_log = logging.getLogger('contact')
 
 def contact(request):
   """Handles Contact Form requests.
@@ -67,10 +70,10 @@ def contact(request):
   try:
     context = ssl.create_default_context()
     with smtplib.SMTP_SSL(SMTP_DOMAIN, SMTP_PORT, context=context) as server:
-      print(SMTP_DOMAIN)
-      print(SMTP_PORT)
+      _log.info(SMTP_DOMAIN)
+      _log.info(SMTP_PORT)
       server.login(USER, PASS)
-      print("logged in successfully")
+      _log.info("logged in successfully")
       server.sendmail(fields["email"], RECIPIENT, msg.as_string())
   except Exception as e:
     print("Error sending email: {0}".format(str(e)))
