@@ -70,10 +70,10 @@ def contact(request):
   try:
     context = ssl.create_default_context()
     with smtplib.SMTP_SSL(SMTP_DOMAIN, SMTP_PORT, context=context) as server:
-      _log.info(SMTP_DOMAIN)
-      _log.info(SMTP_PORT)
+      print(SMTP_DOMAIN)
+      print(SMTP_PORT)
       server.login(USER, PASS)
-      _log.info("logged in successfully")
+      print("logged in successfully")
       server.sendmail(fields["email"], RECIPIENT, msg.as_string())
   except Exception as e:
     print("Error sending email: {0}".format(str(e)))
