@@ -74,6 +74,8 @@ def contact(request):
       server.sendmail(fields["email"], RECIPIENT, msg.as_string())
   except Exception as e:
     print("Error sending email: {0}".format(str(e)))
+    print(SMTP_DOMAIN)
+    print(SMTP_PORT)
     return ("Error sending email: {0}".format(str(e)), 500, headers)
 
   return (f'success: "{msg.as_string()}"', 200, headers)
