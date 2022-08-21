@@ -42,7 +42,7 @@ def contact(request):
   try:
     msg = MIMEMultipart()
     msg['Subject'] = f'Message from {fields["name"]} via seanhofer.com!'
-    msg['From'] = f'"{fields["name"]}" {fields["email"]}'
+    msg['From'] = f'"{fields["name"]}" {USER}'
     msg['To'] = RECIPIENT
     msg.add_header('reply-to', fields["email"])
     msg.attach(MIMEText(fields["message"], 'plain'))
@@ -66,12 +66,10 @@ def contact(request):
 
   try:
     context = ssl.create_default_context()
-    with smtplib.SMTP_SSL(SMTP_DOMAIN, SMTP_PORT, context=context) as server:
-      print("logging in")
+    with smtplib.SMTP(SMTP_DOMAIN, SMTP_PORT) as server:
+      server.starttls(context=context)
       server.login(USER, PASS)
-      print("logged in")
-      server.sendmail(fields["email"], RECIPIENT, msg.as_string())
-      print("sent")
+      server.sendmail(USER, RECIPIENT, msg.as_string())
   except Exception as e:
     print("Error sending email: {0}".format(str(e)))
     return ("Error sending email: {0}".format(str(e)), 500, headers)
