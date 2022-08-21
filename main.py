@@ -42,7 +42,7 @@ def contact(request):
   try:
     msg = MIMEMultipart()
     msg['Subject'] = f'Message from {fields["name"]} via seanhofer.com!'
-    msg['From'] = f'"{fields["name"]}" {USER}'
+    msg['From'] = USER
     msg['To'] = RECIPIENT
     msg.add_header('reply-to', fields["email"])
     msg.attach(MIMEText(fields["message"], 'plain'))
